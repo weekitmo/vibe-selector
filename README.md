@@ -11,6 +11,8 @@
 
 [下载安装](#安装) · [功能总览](#功能) · [快捷键](#快捷键) · [常见问题](#常见问题)
 
+<img src="screenshots/vibe-selector-demo.png" alt="Vibe Selector 运行效果：在页面选中元素，测量间距，一键复制 AI 上下文" width="820">
+
 </div>
 
 ---
