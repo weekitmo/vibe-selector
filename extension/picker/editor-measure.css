@@ -1,0 +1,61 @@
+/* ── Measure mode (vibe-selector extension only) ────────────
+   Red Figma-style guides: 1px lines (explicit -h / -v orientation classes —
+   never derive orientation from inline style), end ticks, 12px red labels
+   with px units on white pills, red box + tag chip on the hovered element. */
+.agent-editor-measure-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none !important;
+  z-index: 2147483646;
+}
+.agent-editor-measure-line-h,
+.agent-editor-measure-line-v {
+  position: fixed;
+  background: #ef4444 !important;
+  pointer-events: none !important;
+}
+.agent-editor-measure-line-h { height: 1px !important; }
+.agent-editor-measure-line-v { width: 1px !important; }
+.agent-editor-measure-tick-v {
+  position: fixed;
+  width: 1px !important;
+  height: 7px !important;
+  background: #ef4444 !important;
+  pointer-events: none !important;
+}
+.agent-editor-measure-tick-h {
+  position: fixed;
+  width: 7px !important;
+  height: 1px !important;
+  background: #ef4444 !important;
+  pointer-events: none !important;
+}
+.agent-editor-measure-label {
+  position: fixed;
+  transform: translateX(-50%);
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.95);
+  color: #ef4444 !important;
+  font: 500 12px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace !important;
+  white-space: nowrap;
+  pointer-events: none !important;
+  z-index: 2147483647;
+}
+.agent-editor-measure-box {
+  position: fixed;
+  border: 1px solid #ef4444 !important;
+  background: rgba(239, 68, 68, 0.05) !important;
+  pointer-events: none !important;
+}
+.agent-editor-measure-tag {
+  position: fixed;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: #ef4444 !important;
+  color: #fff !important;
+  font: 500 11px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace !important;
+  white-space: nowrap;
+  pointer-events: none !important;
+  z-index: 2147483647;
+}

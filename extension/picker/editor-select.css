@@ -1,0 +1,221 @@
+/* ── Custom select (vibe-selector extension only) ─────────── */
+.agent-editor-select-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border: 1px solid #e0e0e0;
+  border-radius: 5px;
+  background: #f8f8f8;
+  color: #444;
+  font-family: inherit;
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 1.2;
+  cursor: pointer;
+  transition: border-color 100ms, box-shadow 100ms, background 100ms;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.agent-editor-select-trigger:hover {
+  background: #eee;
+  border-color: #bbb;
+}
+.agent-editor-select-trigger.agent-editor-select-open {
+  background: #fff;
+  border-color: #999;
+  box-shadow: 0 0 0 2px rgba(17, 17, 17, 0.05);
+}
+.agent-editor-select-label {
+  pointer-events: none;
+}
+.agent-editor-select-caret {
+  width: 8px;
+  height: 5px;
+  color: rgba(17, 17, 17, 0.45);
+  transition: transform 160ms cubic-bezier(0.2, 0, 0.1, 1);
+  pointer-events: none;
+}
+.agent-editor-select-trigger.agent-editor-select-open .agent-editor-select-caret {
+  transform: rotate(180deg);
+}
+.agent-editor-select-pop {
+  position: fixed;
+  z-index: 2147483647;
+  min-width: 104px;
+  padding: 3px;
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.10);
+  border-radius: 7px;
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.03),
+    0 4px 6px -1px rgba(0, 0, 0, 0.06),
+    0 16px 32px -4px rgba(0, 0, 0, 0.12);
+  animation: agent-editor-select-in 140ms cubic-bezier(0.2, 0, 0.1, 1);
+  user-select: none;
+}
+@keyframes agent-editor-select-in {
+  from { opacity: 0; transform: translateY(3px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.agent-editor-select-opt {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 4px 7px;
+  border-radius: 5px;
+  color: #333;
+  font-family: inherit;
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 1.3;
+  cursor: pointer;
+  transition: background 120ms;
+}
+.agent-editor-select-opt:hover {
+  background: rgba(17, 17, 17, 0.06);
+}
+.agent-editor-select-opt-active {
+  background: rgba(17, 17, 17, 0.04);
+}
+.agent-editor-select-check {
+  color: #111;
+  display: inline-flex;
+}
+
+/* ── Unified kbd key-caps (vibe-selector extension only) ──────
+   ONE key-cap look everywhere, matching the root panel's kbd:
+   family INHERITS the panel font (⌘⇧ glyphs render identically),
+   white key-cap with a darker bottom edge. The activation-shortcut
+   row is FLATTENED: button and its inner <kbd> carry no boxes —
+   only the caps inside draw borders (no box-in-box-in-box). */
+.agent-editor-shortcuts kbd {
+  background: #fff;
+  border: 1px solid rgba(17, 17, 17, 0.14);
+  border-bottom-color: rgba(17, 17, 17, 0.22);
+  border-radius: 5px;
+  padding: 1px 5px;
+  color: #333;
+  box-shadow: 0 1px 0 rgba(17, 17, 17, 0.07);
+}
+.agent-editor-kbd-cap {
+  display: inline-block;
+  background: #fff;
+  border: 1px solid rgba(17, 17, 17, 0.14);
+  border-bottom-color: rgba(17, 17, 17, 0.22);
+  border-radius: 5px;
+  padding: 0 5px;
+  color: #333;
+  font-family: inherit;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.6;
+  box-shadow: 0 1px 0 rgba(17, 17, 17, 0.07);
+}
+.agent-editor-kbd-plus {
+  display: inline-block;
+  margin: 0 2px;
+  color: #bbb;
+  font-size: 10px;
+  line-height: 1.6;
+}
+/* Record buttons in settings: ONE box (the button itself is the cap). */
+.agent-editor-shortcut-record {
+  background: #fff;
+  border: 1px solid rgba(17, 17, 17, 0.14);
+  border-bottom-color: rgba(17, 17, 17, 0.22);
+  border-radius: 6px;
+  padding: 5px 10px;
+  color: #111;
+  font-family: inherit;
+  font-size: 10px;
+  font-weight: 600;
+  box-shadow: 0 1px 0 rgba(17, 17, 17, 0.07);
+  transition: border-color 140ms, box-shadow 140ms, background 140ms;
+}
+.agent-editor-shortcut-record:hover {
+  border-color: rgba(17, 17, 17, 0.26);
+}
+.agent-editor-shortcut-record:focus {
+  outline: none;
+  border-color: rgba(17, 17, 17, 0.55);
+  box-shadow: 0 0 0 3px rgba(17, 17, 17, 0.06);
+  background: #fff;
+}
+/* Activation-shortcut summary row: flatten button + inner kbd. */
+.agent-editor-settings-pro .agent-editor-settings-shortcut-action {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+.agent-editor-settings-pro .agent-editor-settings-shortcut-action:hover {
+  background: rgba(17, 17, 17, 0.05);
+  border-radius: 7px;
+}
+.agent-editor-settings-pro .agent-editor-settings-shortcut-current,
+.agent-editor-settings-pro .agent-editor-settings-shortcut-current.agent-editor-settings-shortcut-unassigned {
+  background: none;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+  border-radius: 0;
+  color: inherit;
+}
+.agent-editor-settings-pro .agent-editor-settings-shortcut-edit {
+  color: #1a56db;
+}
+
+/* ── Settings panel scroll (el-scrollbar style) ───────────────
+   Structure: settings > header + scrollwrap > [scroll (native
+   overflow, native thumb hidden) , bar > thumb (absolute,
+   OUTSIDE the scroller so it never scrolls away)]. */
+.agent-editor-settings {
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 48px) !important;
+  overflow: hidden !important;
+}
+.agent-editor-settings .agent-editor-settings-header {
+  flex-shrink: 0;
+}
+.agent-editor-scrollwrap {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+.agent-editor-scroll {
+  height: 100%;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+}
+.agent-editor-scroll::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+.agent-editor-scroll-bar {
+  position: absolute;
+  top: 4px;
+  right: 3px;
+  bottom: 4px;
+  width: 4px;
+  border-radius: 2px;
+  pointer-events: none;
+  z-index: 2;
+}
+.agent-editor-scroll-bar-thumb {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  pointer-events: auto;
+  border-radius: 2px;
+  background: rgba(17, 17, 17, 0.2);
+  opacity: 0;
+  transition: opacity 160ms;
+}
+.agent-editor-scrollwrap:hover .agent-editor-scroll-bar-thumb,
+.agent-editor-scrollwrap.agent-editor-scrolling .agent-editor-scroll-bar-thumb {
+  opacity: 1;
+}

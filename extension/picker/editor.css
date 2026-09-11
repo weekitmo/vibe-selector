@@ -1,0 +1,1561 @@
+/* ── Reset ───────────────────────────────────────────────── */
+.agent-editor-root,
+.agent-editor-root * {
+  box-sizing: border-box;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  line-height: 1.4;
+}
+
+/* A single top-layer host beats page stacking contexts and native dialogs.
+   The manual popover has no backdrop and never intercepts the page itself. */
+.agent-editor-layer-host {
+  all: initial !important;
+  display: block !important;
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  overflow: visible !important;
+  pointer-events: none !important;
+  z-index: 2147483647 !important;
+}
+
+.agent-editor-layer-host::backdrop {
+  background: transparent !important;
+  pointer-events: none !important;
+}
+
+.agent-editor-layer-host > .agent-editor-root { pointer-events: auto; }
+.agent-editor-layer-host > .agent-editor-hover-box,
+.agent-editor-layer-host > .agent-editor-marquee,
+.agent-editor-layer-host > .agent-editor-sel-box,
+.agent-editor-layer-host > .agent-editor-sel-corner,
+.agent-editor-layer-host > .agent-editor-sel-label { pointer-events: none; }
+
+/* Every Selector surface sits at the browser's maximum author-layer depth.
+   Internal order is controlled by insertion order inside the layer host. */
+.agent-editor-root {
+  z-index: 2147483647 !important;
+}
+
+/* ── Hover box ───────────────────────────────────────────── */
+.agent-editor-hover-box {
+  position: fixed;
+  pointer-events: none;
+  z-index: 2147483640;
+  border: 1.5px dashed rgba(0, 0, 0, 0.22);
+  border-radius: 3px;
+  background: rgba(0, 0, 0, 0.03);
+  opacity: 0;
+  transition: opacity 80ms ease;
+}
+
+/* ── Selection box ───────────────────────────────────────── */
+@keyframes agent-editor-sel-in {
+  from { opacity: 0; transform: scale(1.05); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.agent-editor-sel-box {
+  position: fixed;
+  pointer-events: none;
+  z-index: 2147483641;
+  border: 2px solid #111;
+  border-radius: 3px;
+  background: rgba(0, 0, 0, 0.04);
+  opacity: 0;
+  transform-origin: center;
+  animation: agent-editor-sel-in 180ms cubic-bezier(0.2, 0, 0.1, 1) forwards;
+}
+
+/* Pro selection: precise double edge + one short neutral halo. */
+@keyframes agent-editor-pro-sel-in {
+  0% {
+    opacity: 0;
+    box-shadow: 0 0 0 0 rgba(17, 17, 17, 0);
+  }
+  48% {
+    opacity: 1;
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.94),
+      0 0 0 4px rgba(17, 17, 17, 0.08),
+      0 0 10px rgba(17, 17, 17, 0.08);
+  }
+  100% {
+    opacity: 1;
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.90),
+      0 0 0 2px rgba(17, 17, 17, 0.14);
+  }
+}
+
+.agent-editor-hover-box.agent-editor-pro-hover {
+  border: 1px dashed rgba(17, 17, 17, 0.30);
+  background: rgba(17, 17, 17, 0.02);
+}
+
+.agent-editor-sel-box.agent-editor-pro-selection {
+  border: 1px solid #171717;
+  border-radius: 4px;
+  background: rgba(17, 17, 17, 0.018);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.90),
+    0 0 0 2px rgba(17, 17, 17, 0.14);
+  animation: agent-editor-pro-sel-in 220ms cubic-bezier(0.2, 0, 0.12, 1) forwards;
+}
+
+/* ── Corner handles ──────────────────────────────────────── */
+@keyframes agent-editor-corner-in {
+  from { opacity: 0; transform: scale(0); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.agent-editor-sel-corner {
+  position: fixed;
+  width: 7px;
+  height: 7px;
+  background: #111;
+  border: 1.5px solid #fff;
+  border-radius: 1.5px;
+  pointer-events: none;
+  z-index: 2147483642;
+  opacity: 0;
+  transform-origin: center;
+  animation: agent-editor-corner-in 220ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.agent-editor-sel-corner.agent-editor-pro-corner {
+  width: 7px;
+  height: 7px;
+  border-radius: 2px;
+  background: #1b1b1b;
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.20);
+}
+
+/* ── Label ───────────────────────────────────────────────── */
+@keyframes agent-editor-label-in {
+  from { opacity: 0; transform: translateY(3px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.agent-editor-sel-label {
+  position: fixed;
+  pointer-events: none;
+  z-index: 2147483643;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: #fff;
+  background: #111;
+  padding: 2px 6px;
+  border-radius: 3px;
+  white-space: nowrap;
+  opacity: 0;
+  animation: agent-editor-label-in 180ms ease forwards;
+}
+
+.agent-editor-sel-label.agent-editor-pro-selection-label {
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 4px;
+  color: #fff;
+  background: #191919;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
+}
+
+/* Pro per-element actions stay matte so the selected target remains dominant. */
+.agent-editor-annotate-btn.agent-editor-pro-annotate {
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 5px;
+  background: #242424;
+  color: #c9c9c9;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.16);
+}
+.agent-editor-annotate-btn.agent-editor-pro-annotate:hover {
+  background: #333;
+  color: #fff;
+}
+.agent-editor-annotate-btn.agent-editor-pro-annotate.agent-editor-has-note {
+  border-color: rgba(255, 255, 255, 0.24);
+  background: #111;
+  color: #fff;
+}
+
+/* ── Annotate button (per-element) ───────────────────────── */
+.agent-editor-annotate-btn {
+  position: fixed;
+  z-index: 2147483643;
+  width: 20px;
+  height: 20px;
+  border: none;
+  border-radius: 4px;
+  background: #333;
+  color: #aaa;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  opacity: 0;
+  animation: agent-editor-label-in 180ms ease forwards;
+  transition: background 100ms, color 100ms;
+}
+
+.agent-editor-annotate-btn:hover {
+  background: #555;
+  color: #fff;
+}
+
+.agent-editor-annotate-btn.agent-editor-has-note {
+  background: #2563eb;
+  color: #fff;
+}
+
+.agent-editor-annotate-btn.agent-editor-has-note:hover {
+  background: #1d4ed8;
+}
+
+/* ── Annotation popover ──────────────────────────────────── */
+.agent-editor-annotate-popover {
+  position: fixed;
+  z-index: 2147483646;
+  width: 240px;
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 10px;
+  box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.15);
+  padding: 8px;
+  user-select: text;
+}
+
+.agent-editor-annotate-input {
+  width: 100%;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  padding: 6px 8px;
+  font-size: 12px;
+  resize: none;
+  outline: none;
+  background: #fafafa;
+  color: #1a1a1a;
+  font-family: inherit;
+  transition: border-color 150ms;
+}
+
+.agent-editor-annotate-input:focus {
+  border-color: #111;
+  background: #fff;
+}
+
+.agent-editor-annotate-input::placeholder {
+  color: #bbb;
+}
+
+.agent-editor-annotate-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 4px;
+  margin-top: 6px;
+}
+
+.agent-editor-annotate-done,
+.agent-editor-annotate-clear {
+  border: none;
+  border-radius: 5px;
+  padding: 4px 10px;
+  font-size: 11px;
+  cursor: pointer;
+  transition: background 100ms;
+}
+
+.agent-editor-annotate-done {
+  background: #111;
+  color: #fff;
+}
+
+.agent-editor-annotate-done:hover {
+  background: #333;
+}
+
+.agent-editor-annotate-clear {
+  background: #f0f0f0;
+  color: #666;
+}
+
+.agent-editor-annotate-clear:hover {
+  background: #e0e0e0;
+}
+
+/* ── Marquee (drag to select) ────────────────────────────── */
+.agent-editor-marquee {
+  position: fixed;
+  border: 1.5px dashed #555;
+  background: rgba(100, 120, 255, 0.06);
+  border-radius: 2px;
+  pointer-events: none;
+  z-index: 2147483645;
+}
+
+/* ── Chat panel ──────────────────────────────────────────── */
+.agent-editor-chat {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 2147483644;
+  width: 300px;
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.09);
+  border-radius: 12px;
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.03),
+    0 4px 6px -1px rgba(0, 0, 0, 0.06),
+    0 16px 32px -4px rgba(0, 0, 0, 0.11);
+  overflow: hidden;
+  user-select: none;
+}
+
+/* ── Drag handle ─────────────────────────────────────────── */
+.agent-editor-drag-handle {
+  height: 32px;
+  display: flex;
+  align-items: center;
+  cursor: grab;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  transition: background 120ms;
+  padding: 0 6px 0 12px;
+}
+
+.agent-editor-drag-handle:hover {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.agent-editor-drag-handle:active {
+  cursor: grabbing;
+}
+
+.agent-editor-drag-title {
+  flex: 1;
+  font-size: 11px;
+  font-weight: 500;
+  color: #bbb;
+  letter-spacing: 0.03em;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.agent-editor-status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #4ade80;
+  flex-shrink: 0;
+  transition: background 200ms;
+}
+
+.agent-editor-status-label {
+  color: #bbb;
+}
+
+.agent-editor-version {
+  color: #d8d8d8;
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+/* ── Pro edition (extension only) ─────────────────────────────
+   The body stays clean. Metal is limited to a narrow top reflection, the
+   edition mark and the primary action. */
+.agent-editor-chat.agent-editor-pro {
+  border: 1px solid rgba(17, 17, 17, 0.13);
+  border-radius: 13px;
+  background: #fff;
+  box-shadow:
+    0 0 0 1px rgba(17, 17, 17, 0.025),
+    0 8px 24px -8px rgba(17, 17, 17, 0.16);
+}
+
+/* A single narrow reflection communicates the metal surface. */
+.agent-editor-chat.agent-editor-pro .agent-editor-drag-handle {
+  height: 33px;
+  border-bottom: 1px solid rgba(17, 17, 17, 0.08);
+  background: linear-gradient(180deg, #fcfcfc 0%, #f6f6f7 78%, #ececee 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 1),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.56);
+}
+.agent-editor-chat.agent-editor-pro .agent-editor-drag-handle:hover {
+  background: linear-gradient(180deg, #fafafa 0%, #f2f2f3 100%);
+}
+.agent-editor-chat.agent-editor-pro .agent-editor-status-label {
+  color: #888;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+.agent-editor-chat.agent-editor-pro .agent-editor-panel-btn {
+  color: #aaa;
+  border-radius: 5px;
+}
+.agent-editor-chat.agent-editor-pro .agent-editor-panel-btn:hover {
+  color: #333;
+  background: rgba(0, 0, 0, 0.045);
+}
+
+/* Matte graphite mark with one thin, directional reflection. */
+.agent-editor-pro-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 14px;
+  padding: 1px 6px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 4px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  font-size: 8px;
+  font-weight: 700;
+  font-style: normal;
+  line-height: 1;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #f5f5f5;
+  background: linear-gradient(110deg, #1c1c1e 0%, #242426 44%, #555558 50%, #242426 56%, #171719 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16);
+  user-select: none;
+  flex-shrink: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .agent-editor-sel-box.agent-editor-pro-selection,
+  .agent-editor-sel-corner.agent-editor-pro-corner,
+  .agent-editor-sel-label.agent-editor-pro-selection-label,
+  .agent-editor-annotate-btn.agent-editor-pro-annotate {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* The only other material surface: a calm graphite primary action. */
+.agent-editor-chat.agent-editor-pro .agent-editor-copy-btn {
+  border: none;
+  background: linear-gradient(180deg, #29292c 0%, #151517 100%);
+  color: #fff;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.13),
+    0 1px 2px rgba(0, 0, 0, 0.15);
+  transition: background 150ms, transform 100ms, box-shadow 150ms;
+}
+.agent-editor-chat.agent-editor-pro .agent-editor-copy-btn:hover {
+  background: linear-gradient(180deg, #343437 0%, #1d1d1f 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.16),
+    0 2px 4px rgba(0, 0, 0, 0.16);
+}
+.agent-editor-chat.agent-editor-pro .agent-editor-copy-btn:disabled {
+  background: #e3e3e3;
+  color: #aaa;
+  box-shadow: none;
+}
+.agent-editor-chat.agent-editor-pro .agent-editor-copy-btn.agent-editor-copy-done,
+.agent-editor-chat.agent-editor-pro .agent-editor-copy-btn.agent-editor-copy-error {
+  background-image: none;
+  text-shadow: none;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+.agent-editor-chat.agent-editor-pro .agent-editor-copy-btn.agent-editor-copy-done {
+  border-color: #15803d;
+  background: #16a34a;
+}
+.agent-editor-chat.agent-editor-pro .agent-editor-copy-btn.agent-editor-copy-error {
+  border-color: #b91c1c;
+  background: #dc2626;
+}
+.agent-editor-chat.agent-editor-pro .agent-editor-copy-btn.agent-editor-copy-loading {
+  background-color: #171719 !important;
+  background-image: linear-gradient(
+    100deg,
+    #171719 0%,
+    #171719 40%,
+    #555558 50%,
+    #171719 60%,
+    #171719 100%
+  ) !important;
+}
+
+.agent-editor-panel-actions {
+  display: flex;
+  gap: 1px;
+  flex-shrink: 0;
+}
+
+.agent-editor-panel-btn {
+  width: 22px;
+  height: 22px;
+  border: none;
+  background: none;
+  color: #ccc;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: color 100ms, background 100ms;
+  padding: 0;
+}
+
+.agent-editor-panel-btn:hover {
+  color: #444;
+  background: rgba(0, 0, 0, 0.06);
+}
+
+/* ── Minimized state ─────────────────────────────────────── */
+.agent-editor-minimized {
+  width: auto !important;
+  min-width: 130px;
+}
+
+.agent-editor-minimized .agent-editor-drag-handle {
+  border-bottom: none;
+}
+
+/* ── Tags ────────────────────────────────────────────────── */
+.agent-editor-chat-tags {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 10px 4px;
+}
+
+.agent-editor-chat-tags.agent-editor-hidden {
+  display: none;
+}
+
+.agent-editor-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px 2px 2px 8px;
+  background: #f5f5f5;
+  border: 1px solid #e8e8e8;
+  border-radius: 20px;
+  font-size: 11px;
+  color: #333;
+  max-width: 220px;
+  user-select: none;
+}
+
+.agent-editor-tag-num {
+  font-size: 10px;
+  color: #aaa;
+  flex-shrink: 0;
+  margin-right: 1px;
+}
+
+.agent-editor-tag-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Small thumbnail shown in a selection tag when the element is/contains an image. */
+.agent-editor-tag-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  object-fit: cover;
+  margin-right: 4px;
+  flex-shrink: 0;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.agent-editor-tag-x {
+  background: none;
+  border: none;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  margin-left: 1px;
+  cursor: pointer;
+  color: #bbb;
+  font-size: 14px;
+  line-height: 1;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  transition: color 100ms, background 100ms;
+}
+
+.agent-editor-tag-x:hover {
+  color: #333;
+  background: rgba(0, 0, 0, 0.08);
+}
+
+/* ── Tags utility buttons ────────────────────────────────── */
+.agent-editor-tags-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 8px;
+  background: none;
+  border: 1px solid #e0e0e0;
+  border-radius: 20px;
+  font-size: 10px;
+  color: #999;
+  cursor: pointer;
+  transition: color 100ms, border-color 100ms, background 100ms;
+  white-space: nowrap;
+}
+
+.agent-editor-tags-action:hover {
+  color: #333;
+  border-color: #bbb;
+  background: #f5f5f5;
+}
+
+/* ── Action buttons ──────────────────────────────────────── */
+.agent-editor-action-row {
+  display: flex;
+  align-items: stretch;
+  gap: 6px;
+  padding: 6px 8px 8px;
+}
+
+.agent-editor-copy-btn {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 8px 0;
+  border: none;
+  border-radius: 8px;
+  background: #111;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: background 150ms, transform 100ms;
+}
+
+.agent-editor-copy-btn:hover {
+  background: #333;
+}
+
+.agent-editor-copy-btn:active {
+  transform: scale(0.97);
+}
+
+.agent-editor-copy-btn:disabled {
+  background: #e0e0e0;
+  color: #aaa;
+  cursor: default;
+  transform: none;
+}
+
+.agent-editor-copy-btn.agent-editor-copy-done {
+  background: #16a34a;
+  color: #fff !important;
+  -webkit-text-fill-color: #fff !important;
+  gap: 4px;
+}
+
+.agent-editor-copy-btn.agent-editor-copy-done * {
+  color: #fff !important;
+  -webkit-text-fill-color: #fff !important;
+}
+
+.agent-editor-copy-btn.agent-editor-copy-error {
+  background: #dc2626;
+  color: #fff !important;
+  -webkit-text-fill-color: #fff !important;
+}
+
+/* Preparing Markdown — a smooth sheen sweeps across the Copy button. */
+.agent-editor-copy-btn.agent-editor-copy-loading {
+  cursor: default;
+  /* !important so the 流光 sheen always wins — over the button's own :disabled
+     state AND over any aggressive button styles on the host page (a page rule
+     like `button:disabled{background:#e0e0e0!important}` was repainting it grey,
+     which is why the sheen sometimes vanished on real sites). */
+  color: #fff !important;
+  background-color: #111 !important;
+  background-image: linear-gradient(100deg, #111 0%, #111 42%, #6a6a6a 50%, #111 58%, #111 100%) !important;
+  background-size: 250% 100% !important;
+  animation: agent-editor-rev-sheen 1.15s linear infinite !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  .agent-editor-copy-btn.agent-editor-copy-loading { animation: none; }
+}
+
+.agent-editor-copy-btn .agent-editor-sharingan-icon {
+  width: 15px;
+  height: 15px;
+  margin-right: 4px;
+  flex-shrink: 0;
+}
+
+/* ── Copy Screenshot button ─────────────────────────────── */
+.agent-editor-screenshot-btn {
+  flex: 0 0 40px;
+  width: 40px;
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  border: 1px solid #dedede;
+  border-radius: 8px;
+  background: #fafafa;
+  color: #777;
+  cursor: pointer;
+  transition: background 150ms, border-color 150ms, transform 100ms, color 150ms;
+}
+
+.agent-editor-screenshot-btn:hover {
+  border-color: #bbb;
+  background: #fff;
+  color: #111;
+}
+
+.agent-editor-screenshot-btn:active {
+  transform: scale(0.97);
+}
+
+.agent-editor-screenshot-btn:disabled {
+  border-color: #e0e0e0;
+  background: #f3f3f3;
+  color: #c4c4c4;
+  cursor: default;
+  transform: none;
+}
+
+.agent-editor-screenshot-btn:disabled:hover {
+  border-color: #e0e0e0;
+  background: #f3f3f3;
+  color: #c4c4c4;
+}
+
+.agent-editor-screenshot-btn.agent-editor-screenshot-done {
+  border-color: #16a34a;
+  background: #16a34a;
+  color: #fff;
+}
+
+.agent-editor-screenshot-btn.agent-editor-screenshot-error {
+  border-color: #dc2626;
+  background: #dc2626;
+  color: #fff;
+}
+
+.agent-editor-save-btn {
+  flex: 0 0 auto;
+  min-width: 84px;
+  min-height: 36px;
+  margin: 0;
+  padding: 0 10px;
+  border: 1px solid #dcdcdc;
+  border-radius: 8px;
+  background: #fafafa;
+  color: #666;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: inherit;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 150ms, border-color 150ms, transform 100ms, color 150ms;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.agent-editor-save-btn:hover {
+  border-color: #bbb;
+  background: #fff;
+  color: #111;
+}
+
+.agent-editor-save-btn:active {
+  transform: scale(0.98);
+}
+
+.agent-editor-save-btn:disabled {
+  color: #aaa;
+  cursor: default;
+  transform: none;
+}
+
+.agent-editor-save-btn.agent-editor-hidden {
+  display: none;
+}
+
+/* ── Shortcuts hint ─────────────────────────────────────── */
+.agent-editor-shortcuts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  padding: 6px 10px;
+  font-size: 10px;
+  color: #999;
+}
+
+.agent-editor-shortcuts span {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  white-space: nowrap;
+}
+
+.agent-editor-shortcuts kbd {
+  display: inline-block;
+  background: #f0f0f0;
+  border: 1px solid #e0e0e0;
+  border-radius: 3px;
+  padding: 0 4px;
+  font-size: 9px;
+  font-family: inherit;
+  color: #666;
+  line-height: 1.6;
+}
+
+
+/* ── Settings panel ──────────────────────────────────────── */
+.agent-editor-settings {
+  position: fixed;
+  z-index: 2147483647;
+  width: 300px;
+  max-width: calc(100vw - 16px);
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.10);
+  border-radius: 12px;
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.03),
+    0 4px 6px -1px rgba(0, 0, 0, 0.06),
+    0 16px 32px -4px rgba(0, 0, 0, 0.12);
+  padding: 2px 0 4px;
+  animation: agent-editor-settings-in 160ms cubic-bezier(0.2, 0, 0.1, 1) forwards;
+  opacity: 0;
+  transform: translateY(4px);
+}
+
+@keyframes agent-editor-settings-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.agent-editor-settings-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 12px 8px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  margin-bottom: 2px;
+}
+
+.agent-editor-settings-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: #2a2a2a;
+  letter-spacing: 0.02em;
+  flex: 1;
+}
+
+.agent-editor-settings-close {
+  width: 20px;
+  height: 20px;
+  border: none;
+  background: none;
+  color: #bbb;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  padding: 0;
+  flex-shrink: 0;
+  transition: color 100ms, background 100ms;
+}
+
+.agent-editor-settings-close:hover {
+  color: #444;
+  background: rgba(0, 0, 0, 0.06);
+}
+
+.agent-editor-setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  gap: 12px;
+}
+
+.agent-editor-setting-row:hover {
+  background: rgba(0, 0, 0, 0.018);
+}
+
+.agent-editor-setting-group-title {
+  margin: 8px 12px 2px;
+  padding-top: 4px;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  color: #aaa;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.agent-editor-settings-header + .agent-editor-setting-group-title {
+  margin-top: 4px;
+  padding-top: 0;
+  border-top: none;
+}
+
+@keyframes agent-editor-setting-flash {
+  0%   { background: rgba(0, 0, 0, 0.05); }
+  100% { background: transparent; }
+}
+
+.agent-editor-setting-flash {
+  animation: agent-editor-setting-flash 600ms ease forwards;
+}
+
+.agent-editor-setting-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.agent-editor-setting-label-line {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+}
+
+.agent-editor-setting-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: #1f1f1f;
+}
+
+.agent-editor-setting-label-line .agent-editor-sharingan-icon {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+.agent-editor-setting-desc {
+  font-size: 10px;
+  color: #8a8a8a;
+  line-height: 1.25;
+}
+
+/* ── Settings-panel cross-link (bookmarklet ⇄ Pro extension) ──
+   Deliberately quiet: a thin divider + muted text, matching the panel's
+   restrained palette. No card fill, no accent colour. Free-only markup. */
+.agent-editor-settings-promo {
+  display: block;
+  margin: 6px 12px 10px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  text-decoration: none;
+}
+.agent-editor-settings-promo-title {
+  display: block;
+  font-size: 11px;
+  font-weight: 500;
+  color: #4a4a4a;
+  transition: color 120ms;
+}
+.agent-editor-settings-promo-desc {
+  display: block;
+  font-size: 10px;
+  color: #999;
+  line-height: 1.4;
+  margin-top: 3px;
+}
+.agent-editor-settings-promo-cta {
+  display: inline-block;
+  font-size: 10px;
+  color: #777;
+  margin-top: 6px;
+  transition: color 120ms;
+}
+.agent-editor-settings-promo:hover .agent-editor-settings-promo-title,
+.agent-editor-settings-promo:hover .agent-editor-settings-promo-cta {
+  color: #222;
+}
+
+/* ── Small stroke icon shared by setting rows ── */
+.agent-editor-setting-icon {
+  width: 14px;
+  height: 14px;
+  color: #8a8a8a;
+  flex-shrink: 0;
+}
+
+/* ── Pro settings: clean shell, one reflective header ───────── */
+.agent-editor-settings.agent-editor-pro {
+  border: 1px solid rgba(17, 17, 17, 0.12);
+  border-radius: 13px;
+  background: #fff;
+  box-shadow:
+    0 0 0 1px rgba(17, 17, 17, 0.02),
+    0 10px 28px -10px rgba(17, 17, 17, 0.16);
+}
+.agent-editor-settings.agent-editor-pro .agent-editor-settings-header {
+  background: linear-gradient(180deg, #fcfcfc 0%, #f6f6f7 78%, #ececee 100%);
+  border-bottom: 1px solid rgba(17, 17, 17, 0.07);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 1),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.52);
+  margin-bottom: 2px;
+}
+.agent-editor-settings.agent-editor-pro .agent-editor-settings-title {
+  color: #222;
+  letter-spacing: 0.02em;
+}
+.agent-editor-settings.agent-editor-pro .agent-editor-setting-row:hover {
+  background: rgba(0, 0, 0, 0.025);
+}
+.agent-editor-settings.agent-editor-pro .agent-editor-setting-label {
+  color: #222;
+}
+.agent-editor-settings.agent-editor-pro .agent-editor-setting-desc {
+  color: #888;
+}
+
+.agent-editor-settings-pro {
+  margin: 8px 10px 10px;
+  padding: 10px 11px;
+  border: 1px solid rgba(17, 17, 17, 0.08);
+  border-radius: 9px;
+  background: #f7f7f8;
+  box-shadow: none;
+}
+.agent-editor-settings-pro-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.agent-editor-settings-pro-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+  flex: 1;
+}
+.agent-editor-settings-pro-label-line {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+.agent-editor-settings-pro .agent-editor-pro-badge {
+  min-height: 14px;
+  padding: 2px 6px;
+  font-size: 7.5px;
+  letter-spacing: 0.09em;
+}
+.agent-editor-settings-pro-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: #333;
+  letter-spacing: 0.01em;
+  line-height: 1.2;
+}
+.agent-editor-settings-pro-hint {
+  font-size: 10px;
+  color: #888;
+  line-height: 1.3;
+  padding-left: 1px;
+}
+.agent-editor-settings-shortcut-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  padding: 5px 9px;
+  border: 1px solid rgba(17, 17, 17, 0.11);
+  border-radius: 7px;
+  background: #fff;
+  color: #444;
+  font: inherit;
+  cursor: pointer;
+  flex-shrink: 0;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.03);
+  transition: background 120ms, border-color 120ms, color 120ms, transform 100ms, box-shadow 120ms;
+}
+.agent-editor-settings-shortcut-action:hover {
+  border-color: rgba(17, 17, 17, 0.24);
+  background: #fff;
+  color: #111;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+.agent-editor-settings-shortcut-action:active { transform: scale(0.98); }
+.agent-editor-settings-shortcut-current {
+  display: inline-block;
+  padding: 0 5px;
+  border: 1px solid #dedede;
+  border-radius: 4px;
+  background: #f2f2f2;
+  color: #333;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.55;
+  letter-spacing: 0.02em;
+  box-shadow: none;
+}
+.agent-editor-settings-shortcut-current.agent-editor-settings-shortcut-unassigned {
+  border-color: #ddd;
+  background: #f4f4f4;
+  color: #777;
+}
+.agent-editor-settings-shortcut-edit {
+  font-size: 10px;
+  font-weight: 500;
+  color: #888;
+}
+.agent-editor-settings-shortcut-action:hover .agent-editor-settings-shortcut-edit {
+  color: #444;
+}
+
+.agent-editor-shortcut-record {
+  min-width: 72px;
+  max-width: 180px;
+  padding: 4px 7px;
+  border: 1px solid #dedede;
+  border-radius: 5px;
+  background: #f7f7f7;
+  color: #444;
+  font: 600 10px ui-monospace, SFMono-Regular, Menlo, monospace;
+  line-height: 1.45;
+  cursor: pointer;
+  text-align: center;
+}
+.agent-editor-shortcut-record:focus {
+  outline: 2px solid rgba(37, 99, 235, 0.28);
+  outline-offset: 1px;
+  background: #fff;
+}
+
+/* ── Markdown result panel — anchored above the chat menu ── */
+.agent-editor-revprompt {
+  position: fixed;
+  z-index: 2147483647;
+  width: 320px;
+  max-width: calc(100vw - 16px);
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.10);
+  border-radius: 12px;
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.03),
+    0 4px 6px -1px rgba(0, 0, 0, 0.06),
+    0 16px 32px -4px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(4px);
+  animation: agent-editor-settings-in 160ms cubic-bezier(0.2, 0, 0.1, 1) forwards;
+}
+.agent-editor-revprompt-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 12px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+.agent-editor-revprompt-title { font-size: 11px; font-weight: 600; color: #333; letter-spacing: 0.02em; }
+.agent-editor-revprompt-close {
+  width: 20px; height: 20px; border: none; background: none; color: #bbb;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  border-radius: 4px; padding: 0; font-size: 15px; line-height: 1;
+  transition: color 100ms, background 100ms;
+}
+.agent-editor-revprompt-close:hover { color: #444; background: rgba(0, 0, 0, 0.06); }
+.agent-editor-revprompt-body { padding: 12px; }
+.agent-editor-revprompt-text {
+  font-size: 12px;
+  line-height: 1.65;
+  color: #2a2a2a;
+  max-height: 42vh;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+  user-select: text;
+}
+.agent-editor-revprompt-err { font-size: 12px; color: #c0392b; padding: 4px 2px; }
+@keyframes agent-editor-rev-sheen {
+  0%   { background-position: 130% 0; }
+  100% { background-position: -30% 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .agent-editor-revprompt { animation: none; opacity: 1; transform: none; }
+  .agent-editor-revprompt-sheen { animation: none; }
+}
+
+/* ── Toggle switch ────────────────────────────────────────── */
+.agent-editor-toggle {
+  position: relative;
+  display: inline-block;
+  width: 30px;
+  height: 17px;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.agent-editor-toggle input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+  position: absolute;
+}
+
+.agent-editor-toggle-slider {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: #ddd;
+  border-radius: 17px;
+  transition: background 180ms;
+}
+
+.agent-editor-toggle-slider::before {
+  content: "";
+  position: absolute;
+  width: 13px;
+  height: 13px;
+  left: 2px;
+  top: 2px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform 180ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+}
+
+.agent-editor-toggle input:checked + .agent-editor-toggle-slider {
+  background: #111;
+}
+
+.agent-editor-toggle input:checked + .agent-editor-toggle-slider::before {
+  transform: translateX(13px);
+}
+
+/* ── Language button ──────────────────────────────────────── */
+.agent-editor-lang-btn {
+  border: 1px solid #e0e0e0;
+  border-radius: 5px;
+  background: #f8f8f8;
+  color: #444;
+  font-size: 10px;
+  font-weight: 500;
+  padding: 3px 8px;
+  cursor: pointer;
+  transition: background 100ms, border-color 100ms;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.agent-editor-lang-btn:hover {
+  background: #eee;
+  border-color: #bbb;
+}
+
+
+/* ── Custom select (vibe-selector extension only) ─────────── */
+.agent-editor-select-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border: 1px solid #e0e0e0;
+  border-radius: 5px;
+  background: #f8f8f8;
+  color: #444;
+  font-family: inherit;
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 1.2;
+  cursor: pointer;
+  transition: border-color 100ms, box-shadow 100ms, background 100ms;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.agent-editor-select-trigger:hover {
+  background: #eee;
+  border-color: #bbb;
+}
+.agent-editor-select-trigger.agent-editor-select-open {
+  background: #fff;
+  border-color: #999;
+  box-shadow: 0 0 0 2px rgba(17, 17, 17, 0.05);
+}
+.agent-editor-select-label {
+  pointer-events: none;
+}
+.agent-editor-select-caret {
+  width: 8px;
+  height: 5px;
+  color: rgba(17, 17, 17, 0.45);
+  transition: transform 160ms cubic-bezier(0.2, 0, 0.1, 1);
+  pointer-events: none;
+}
+.agent-editor-select-trigger.agent-editor-select-open .agent-editor-select-caret {
+  transform: rotate(180deg);
+}
+.agent-editor-select-pop {
+  position: fixed;
+  z-index: 2147483647;
+  min-width: 104px;
+  padding: 3px;
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.10);
+  border-radius: 7px;
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.03),
+    0 4px 6px -1px rgba(0, 0, 0, 0.06),
+    0 16px 32px -4px rgba(0, 0, 0, 0.12);
+  animation: agent-editor-select-in 140ms cubic-bezier(0.2, 0, 0.1, 1);
+  user-select: none;
+}
+@keyframes agent-editor-select-in {
+  from { opacity: 0; transform: translateY(3px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.agent-editor-select-opt {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 4px 7px;
+  border-radius: 5px;
+  color: #333;
+  font-family: inherit;
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 1.3;
+  cursor: pointer;
+  transition: background 120ms;
+}
+.agent-editor-select-opt:hover {
+  background: rgba(17, 17, 17, 0.06);
+}
+.agent-editor-select-opt-active {
+  background: rgba(17, 17, 17, 0.04);
+}
+.agent-editor-select-check {
+  color: #111;
+  display: inline-flex;
+}
+
+/* ── Unified kbd key-caps (vibe-selector extension only) ──────
+   ONE key-cap look everywhere, matching the root panel's kbd:
+   family INHERITS the panel font (⌘⇧ glyphs render identically),
+   white key-cap with a darker bottom edge. The activation-shortcut
+   row is FLATTENED: button and its inner <kbd> carry no boxes —
+   only the caps inside draw borders (no box-in-box-in-box). */
+.agent-editor-shortcuts kbd {
+  background: #fff;
+  border: 1px solid rgba(17, 17, 17, 0.14);
+  border-bottom-color: rgba(17, 17, 17, 0.22);
+  border-radius: 5px;
+  padding: 1px 5px;
+  color: #333;
+  box-shadow: 0 1px 0 rgba(17, 17, 17, 0.07);
+}
+.agent-editor-kbd-cap {
+  display: inline-block;
+  background: #fff;
+  border: 1px solid rgba(17, 17, 17, 0.14);
+  border-bottom-color: rgba(17, 17, 17, 0.22);
+  border-radius: 5px;
+  padding: 0 5px;
+  color: #333;
+  font-family: inherit;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.6;
+  box-shadow: 0 1px 0 rgba(17, 17, 17, 0.07);
+}
+.agent-editor-kbd-plus {
+  display: inline-block;
+  margin: 0 2px;
+  color: #bbb;
+  font-size: 10px;
+  line-height: 1.6;
+}
+/* Record buttons in settings: ONE box (the button itself is the cap). */
+.agent-editor-shortcut-record {
+  background: #fff;
+  border: 1px solid rgba(17, 17, 17, 0.14);
+  border-bottom-color: rgba(17, 17, 17, 0.22);
+  border-radius: 6px;
+  padding: 5px 10px;
+  color: #111;
+  font-family: inherit;
+  font-size: 10px;
+  font-weight: 600;
+  box-shadow: 0 1px 0 rgba(17, 17, 17, 0.07);
+  transition: border-color 140ms, box-shadow 140ms, background 140ms;
+}
+.agent-editor-shortcut-record:hover {
+  border-color: rgba(17, 17, 17, 0.26);
+}
+.agent-editor-shortcut-record:focus {
+  outline: none;
+  border-color: rgba(17, 17, 17, 0.55);
+  box-shadow: 0 0 0 3px rgba(17, 17, 17, 0.06);
+  background: #fff;
+}
+/* Activation-shortcut summary row: flatten button + inner kbd. */
+.agent-editor-settings-pro .agent-editor-settings-shortcut-action {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+.agent-editor-settings-pro .agent-editor-settings-shortcut-action:hover {
+  background: rgba(17, 17, 17, 0.05);
+  border-radius: 7px;
+}
+.agent-editor-settings-pro .agent-editor-settings-shortcut-current,
+.agent-editor-settings-pro .agent-editor-settings-shortcut-current.agent-editor-settings-shortcut-unassigned {
+  background: none;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+  border-radius: 0;
+  color: inherit;
+}
+.agent-editor-settings-pro .agent-editor-settings-shortcut-edit {
+  color: #1a56db;
+}
+
+/* ── Settings panel scroll (el-scrollbar style) ───────────────
+   Structure: settings > header + scrollwrap > [scroll (native
+   overflow, native thumb hidden) , bar > thumb (absolute,
+   OUTSIDE the scroller so it never scrolls away)]. */
+.agent-editor-settings {
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 48px) !important;
+  overflow: hidden !important;
+}
+.agent-editor-settings .agent-editor-settings-header {
+  flex-shrink: 0;
+}
+.agent-editor-scrollwrap {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+.agent-editor-scroll {
+  height: 100%;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+}
+.agent-editor-scroll::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+.agent-editor-scroll-bar {
+  position: absolute;
+  top: 4px;
+  right: 3px;
+  bottom: 4px;
+  width: 4px;
+  border-radius: 2px;
+  pointer-events: none;
+  z-index: 2;
+}
+.agent-editor-scroll-bar-thumb {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  pointer-events: auto;
+  border-radius: 2px;
+  background: rgba(17, 17, 17, 0.2);
+  opacity: 0;
+  transition: opacity 160ms;
+}
+.agent-editor-scrollwrap:hover .agent-editor-scroll-bar-thumb,
+.agent-editor-scrollwrap.agent-editor-scrolling .agent-editor-scroll-bar-thumb {
+  opacity: 1;
+}
+
+
+/* ── Measure mode (vibe-selector extension only) ────────────
+   Red Figma-style guides: 1px lines (explicit -h / -v orientation classes —
+   never derive orientation from inline style), end ticks, 12px red labels
+   with px units on white pills, red box + tag chip on the hovered element. */
+.agent-editor-measure-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none !important;
+  z-index: 2147483646;
+}
+.agent-editor-measure-line-h,
+.agent-editor-measure-line-v {
+  position: fixed;
+  background: #ef4444 !important;
+  pointer-events: none !important;
+}
+.agent-editor-measure-line-h { height: 1px !important; }
+.agent-editor-measure-line-v { width: 1px !important; }
+.agent-editor-measure-tick-v {
+  position: fixed;
+  width: 1px !important;
+  height: 7px !important;
+  background: #ef4444 !important;
+  pointer-events: none !important;
+}
+.agent-editor-measure-tick-h {
+  position: fixed;
+  width: 7px !important;
+  height: 1px !important;
+  background: #ef4444 !important;
+  pointer-events: none !important;
+}
+.agent-editor-measure-label {
+  position: fixed;
+  transform: translateX(-50%);
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.95);
+  color: #ef4444 !important;
+  font: 500 12px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace !important;
+  white-space: nowrap;
+  pointer-events: none !important;
+  z-index: 2147483647;
+}
+.agent-editor-measure-box {
+  position: fixed;
+  border: 1px solid #ef4444 !important;
+  background: rgba(239, 68, 68, 0.05) !important;
+  pointer-events: none !important;
+}
+.agent-editor-measure-tag {
+  position: fixed;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: #ef4444 !important;
+  color: #fff !important;
+  font: 500 11px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace !important;
+  white-space: nowrap;
+  pointer-events: none !important;
+  z-index: 2147483647;
+}

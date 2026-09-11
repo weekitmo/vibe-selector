@@ -1,0 +1,64 @@
+{
+  "manifest_version": 3,
+  "name": "Vibe Selector",
+  "version": "0.1.0",
+  "description": "Point at any element, copy structured context, Markdown or screenshot for your AI coding assistant.",
+  "minimum_chrome_version": "116",
+  "permissions": [
+    "scripting",
+    "storage",
+    "downloads",
+    "contextMenus",
+    "clipboardWrite"
+  ],
+  "host_permissions": ["<all_urls>"],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "action": {
+    "default_title": "Vibe Selector — activate on this page",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "commands": {
+    "_execute_action": {
+      "suggested_key": {
+        "default": "Alt+Shift+S",
+        "mac": "Alt+Shift+S"
+      },
+      "description": "Toggle Vibe Selector on the current page"
+    },
+    "copy-context": {
+      "suggested_key": {
+        "default": "Alt+Shift+C",
+        "mac": "Alt+Shift+C"
+      },
+      "description": "Copy context of the current selection"
+    },
+    "screenshot-context": {
+      "suggested_key": {
+        "default": "Alt+Shift+X",
+        "mac": "Alt+Shift+X"
+      },
+      "description": "Screenshot + context of the current selection"
+    },
+    "copy-markdown": {
+      "suggested_key": {
+        "default": "Alt+Shift+M",
+        "mac": "Alt+Shift+M"
+      },
+      "description": "Copy selection as Markdown"
+    }
+  }
+}

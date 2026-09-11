@@ -1,0 +1,7 @@
+node_modules/
+dist-extension/
+plannings/
+.DS_Store
+
+.pi/
+.oh-my-memory/decisions/

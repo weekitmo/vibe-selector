@@ -1,0 +1,11 @@
+{
+  "name": "vibe-selector",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Chrome MV3 extension packaging of the Selector element picker",
+  "license": "MIT",
+  "scripts": {
+    "build": "node scripts/build.js",
+    "check": "npm run build"
+  }
+}

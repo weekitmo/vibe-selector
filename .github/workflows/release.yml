@@ -1,0 +1,49 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Build extension
+        run: npm run build
+
+      - name: Check dist output
+        run: |
+          test -f dist-extension/manifest.json
+          test -f dist-extension/background.js
+          test -f dist-extension/picker/editor.js
+
+      - name: Read version
+        id: version
+        run: echo "version=$(node -p "require('./extension/manifest.json').version")" >> "$GITHUB_OUTPUT"
+
+      - name: Pack zip
+        run: |
+          cd dist-extension
+          zip -r ../vibe-selector-v${{ steps.version.outputs.version }}.zip .
+          cd ..
+          unzip -l vibe-selector-v${{ steps.version.outputs.version }}.zip
+
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: vibe-selector-v*.zip
+          generate_release_notes: true
+          fail_on_unmatched_files: true
